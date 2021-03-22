@@ -33,7 +33,25 @@ public class DetectorRepositoryImpl implements DetectorRepository {
     }
 
     @Override
-    public List<String> getTokens(int first, int last) {
-        return new ArrayList<>();
+    public List<String> getTokens(String pathToFile, long first, long last) {
+        List<String> result = new ArrayList<>();
+        long currentTokenPosition = 0L;
+
+        try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(pathToFile))) {
+            String fileLineContent;
+            while ((fileLineContent = fileBufferReader.readLine()) != null) {
+                if (currentTokenPosition >= first && currentTokenPosition <= last) {
+                    result.add(fileLineContent);
+                }
+                currentTokenPosition++;
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("Error: file not found. {}", e.getMessage());
+        } catch (IOException e) {
+            logger.error("Error during reading data. {}", e.getMessage());
+        }
+        return result;
     }
+
+
 }

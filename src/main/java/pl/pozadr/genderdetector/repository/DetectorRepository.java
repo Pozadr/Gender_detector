@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface DetectorRepository {
     boolean isContaining(String pathToFile, String input);
-    List<String> getTokens(int first, int last);
+    List<String> getTokens(String pathToFile, long first, long last);
 }

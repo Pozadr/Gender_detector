@@ -23,7 +23,18 @@ public class DetectorServiceImpl implements DetectorService {
 
     @Override
     public List<String> getTokens(Integer pageNo, Integer pageSize) {
-        return new ArrayList<>();
+        if (pageNo == null) {
+            throw new IllegalArgumentException("Given pageNo is null");
+        } else if (pageNo > Integer.MAX_VALUE || pageNo < Integer.MIN_VALUE) {
+            throw new IllegalArgumentException("Given pageNo is out of Integer range.");
+        }
+        if (pageSize == null) {
+            throw new IllegalArgumentException("Given pageSize is null");
+        } else if (pageSize > Integer.MAX_VALUE || pageSize < Integer.MIN_VALUE) {
+            throw new IllegalArgumentException("Given pageSize is out of Integer range.");
+        }
+
+        return getHalfMaleAndHalfFemaleTokens(pageNo, pageSize);
     }
 
     @Override
@@ -76,6 +87,27 @@ public class DetectorServiceImpl implements DetectorService {
             }
         }
         return genderMarker;
+    }
+
+    private List<String> getHalfMaleAndHalfFemaleTokens(int pageNo, long pageSize) {
+        long firstToken = (long) pageNo * pageSize / 2;
+        long lastToken = firstToken + (pageSize / 2);
+
+        List<String> maleTokens = getMaleTokensFromRange(firstToken, lastToken);
+        List<String> femaleTokens = getFemaleTokensFromRange(firstToken, lastToken);
+
+        List<String> allTokens = new ArrayList<>();
+        allTokens.addAll(maleTokens);
+        allTokens.addAll(femaleTokens);
+        return allTokens;
+    }
+
+    private List<String> getMaleTokensFromRange(long firstToken, long lastToken) {
+        return new ArrayList<>(detectorRepository.getTokens(AppConstants.PATH_TO_MALE_FLAT_FILE, firstToken, lastToken));
+    }
+
+    private List<String> getFemaleTokensFromRange(long firstToken, long lastToken) {
+        return new ArrayList<>(detectorRepository.getTokens(AppConstants.PATH_TO_FEMALE_FLAT_FILE, firstToken, lastToken));
     }
 
     private boolean isMale(String oneToken) {
