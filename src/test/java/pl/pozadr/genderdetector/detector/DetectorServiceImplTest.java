@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pl.pozadr.genderdetector.config.AppConstants;
 import pl.pozadr.genderdetector.repository.DetectorRepository;
-import pl.pozadr.genderdetector.repository.DetectorRepositoryImpl;
 import pl.pozadr.genderdetector.service.DetectorServiceImpl;
 
 import java.util.List;
@@ -21,7 +21,7 @@ class DetectorServiceImplTest {
 
     @BeforeEach
     private void setup() {
-        detectorRepository = mock(DetectorRepositoryImpl.class);
+        detectorRepository = mock(DetectorRepository.class);
         detectorService = new DetectorServiceImpl(detectorRepository);
     }
 
@@ -44,22 +44,29 @@ class DetectorServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("dataCheckFirstToken")
-    public void checkFirstToken_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults) {
+    public void checkFirstToken_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults,
+                                                                   boolean repoIsContainingMale,
+                                                                   boolean repoIsContainingFemale) {
         // given
         // when
+        when(detectorRepository.isContaining(eq(AppConstants.PATH_TO_MALE_FLAT_FILE), anyString()))
+                .thenReturn(repoIsContainingMale);
+        when(detectorRepository.isContaining(eq(AppConstants.PATH_TO_FEMALE_FLAT_FILE), anyString()))
+                .thenReturn(repoIsContainingFemale);
+
         String result = detectorService.checkFirstTokenInName(inputName);
         // then
-        Assertions.assertEquals(result, expectedResults);
+        Assertions.assertEquals(expectedResults, result);
     }
 
     private static Stream<Arguments> dataCheckFirstToken() {
         return Stream.of(
-                Arguments.of("Adrian Adam", "MALE"),
-                Arguments.of("Adrian Anna", "MALE"),
-                Arguments.of("Karolina Adam", "FEMALE"),
-                Arguments.of("Anna Katarzyna", "FEMALE"),
-                Arguments.of("Xxxxxxx Katarzyna", "INCONCLUSIVE"),
-                Arguments.of("Xxxxxxx Adam", "INCONCLUSIVE")
+                Arguments.of("Adrian Adam", "MALE", true, false),
+                Arguments.of("Adrian Anna", "MALE", true, false),
+                Arguments.of("Karolina Adam", "FEMALE", false, true),
+                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
+                Arguments.of("Xxxxxxx Katarzyna", "INCONCLUSIVE", false, false),
+                Arguments.of("Xxxxxxx Adam", "INCONCLUSIVE", false, false)
         );
     }
 
@@ -83,25 +90,31 @@ class DetectorServiceImplTest {
 
     @ParameterizedTest
     @MethodSource("dataCheckAllTokens")
-    public void checkAllTokens_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults) {
+    public void checkAllTokens_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults,
+                                                                  boolean repoIsContainingMale,
+                                                                  boolean repoIsContainingFemale) {
         // given
         // when
+        when(detectorRepository.isContaining(eq(AppConstants.PATH_TO_MALE_FLAT_FILE), anyString()))
+                .thenReturn(repoIsContainingMale);
+        when(detectorRepository.isContaining(eq(AppConstants.PATH_TO_FEMALE_FLAT_FILE), anyString()))
+                .thenReturn(repoIsContainingFemale);
         String result = detectorService.checkAllTokensInName(inputName);
         // then
-        Assertions.assertEquals(result, expectedResults);
+        Assertions.assertEquals(expectedResults, result);
     }
 
     private static Stream<Arguments> dataCheckAllTokens() {
         return Stream.of(
-                Arguments.of("Adrian Adam", "MALE"),
-                Arguments.of("Adrian Anna", "INCONCLUSIVE"),
-                Arguments.of("Karolina Adam", "INCONCLUSIVE"),
-                Arguments.of("Anna Katarzyna", "FEMALE"),
-                Arguments.of("Anna Adrian Katarzyna Adam", "INCONCLUSIVE"),
-                Arguments.of("Anna Katarzyna", "FEMALE"),
-                Arguments.of("Xxxxxxx Katarzyna", "FEMALE"),
-                Arguments.of("Xxxx Yyyy Zzzz", "INCONCLUSIVE"),
-                Arguments.of("Xxxxxxx Adam", "MALE")
+                Arguments.of("Adrian Adam", "MALE", true, false),
+                Arguments.of("Adrian Anna", "INCONCLUSIVE", false, false),
+                Arguments.of("Karolina Adam", "INCONCLUSIVE", false, false),
+                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
+                Arguments.of("Anna Adrian Katarzyna Adam", "INCONCLUSIVE", false, false),
+                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
+                Arguments.of("Xxxxxxx Katarzyna", "FEMALE", false, true),
+                Arguments.of("Xxxx Yyyy Zzzz", "INCONCLUSIVE", false, false),
+                Arguments.of("Xxxxxxx Adam", "MALE", true, false)
         );
     }
 
