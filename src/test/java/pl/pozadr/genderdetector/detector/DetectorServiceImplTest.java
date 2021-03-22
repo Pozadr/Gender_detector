@@ -10,6 +10,7 @@ import pl.pozadr.genderdetector.config.AppConstants;
 import pl.pozadr.genderdetector.repository.DetectorRepository;
 import pl.pozadr.genderdetector.service.DetectorServiceImpl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -138,18 +139,34 @@ class DetectorServiceImplTest {
     @Test
     public void getTokens_shouldReturnListOfTokens() {
         // given
-        List<String> expectedResults = dataGetTokensReturnsListoOfTokens();
+        List<String> expectedResults = getExpectedResults();
         int pageNo = 1;
-        int pageSize = 3;
+        int pageSize = expectedResults.size();
         // when
-        when(detectorRepository.getTokens(anyInt(), anyInt())).thenReturn(dataGetTokensReturnsListoOfTokens());
+        when(detectorRepository.getTokens(eq(AppConstants.PATH_TO_MALE_FLAT_FILE), anyLong(), anyLong())).
+                thenReturn(mockDataMales());
+        when(detectorRepository.getTokens(eq(AppConstants.PATH_TO_FEMALE_FLAT_FILE), anyLong(), anyLong())).
+                thenReturn(mockDataFemales());
         List<String> result = detectorService.getTokens(pageNo, pageSize);
         // then
-        Assertions.assertEquals(result, expectedResults);
+        Assertions.assertEquals(expectedResults, result);
     }
 
-    private List<String> dataGetTokensReturnsListoOfTokens() {
-        return List.of("Adrian", "Anna", "Karolina");
+    private List<String> getExpectedResults() {
+        List<String> maleResult = mockDataMales();
+        List<String> femaleResult = mockDataFemales();
+        List<String> expectedResults = new ArrayList<>();
+        expectedResults.addAll(maleResult);
+        expectedResults.addAll(femaleResult);
+        return expectedResults;
+    }
+
+    private List<String> mockDataMales() {
+        return List.of("Adrian", "Karol", "Steve");
+    }
+
+    private List<String> mockDataFemales() {
+        return List.of("Karolina", "Anna", "Angelika");
     }
 
 
