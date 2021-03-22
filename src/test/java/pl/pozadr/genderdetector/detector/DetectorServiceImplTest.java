@@ -6,36 +6,40 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import pl.pozadr.genderdetector.detector.service.DetectorServiceImpl;
+import pl.pozadr.genderdetector.repository.DetectorRepository;
+import pl.pozadr.genderdetector.repository.DetectorRepositoryImpl;
+import pl.pozadr.genderdetector.service.DetectorServiceImpl;
 
+import java.util.List;
 import java.util.stream.Stream;
+
+import static org.mockito.Mockito.*;
 
 class DetectorServiceImplTest {
     private DetectorServiceImpl detectorService;
+    private DetectorRepository detectorRepository;
 
     @BeforeEach
     private void setup() {
-        detectorService = new DetectorServiceImpl();
+        detectorRepository = mock(DetectorRepositoryImpl.class);
+        detectorService = new DetectorServiceImpl(detectorRepository);
     }
 
-    @Test
-    public void checkFirstToken_nameNull_shouldThrowsIllegalArgumentException() {
+    @ParameterizedTest
+    @MethodSource("dataCheckFirstTokenIllegalArgumentException")
+    public void checkFirstToken_shouldThrowsIllegalArgumentException(String name) {
         // given
-        String name = null;
         // when
         // then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> detectorService.checkFirstToken(name));
+                () -> detectorService.checkFirstTokenInName(name));
     }
 
-    @Test
-    public void checkFirstToken_nameBlank_shouldThrowsIllegalArgumentException() {
-        // given
-        String name = "";
-        // when
-        // then
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> detectorService.checkFirstToken(name));
+    private static Stream<Arguments> dataCheckFirstTokenIllegalArgumentException() {
+        return Stream.of(
+                Arguments.of((String) null),
+                Arguments.of("")
+        );
     }
 
     @ParameterizedTest
@@ -43,7 +47,7 @@ class DetectorServiceImplTest {
     public void checkFirstToken_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults) {
         // given
         // when
-        String result = detectorService.checkFirstToken(inputName);
+        String result = detectorService.checkFirstTokenInName(inputName);
         // then
         Assertions.assertEquals(result, expectedResults);
     }
@@ -60,33 +64,29 @@ class DetectorServiceImplTest {
     }
 
 
-    @Test
-    public void checkAllTokens_nameNull_shouldThrowsIllegalArgumentException() {
+    @ParameterizedTest
+    @MethodSource("dataCheckAllTokensIllegalArgumentException")
+    public void checkAllTokens_shouldThrowsIllegalArgumentException(String name) {
         // given
-        String name = null;
         // when
         // then
         Assertions.assertThrows(IllegalArgumentException.class,
-                () -> detectorService.checkAllTokens(name));
+                () -> detectorService.checkAllTokensInName(name));
     }
 
-    @Test
-    public void checkAllTokens_nameBlank_shouldThrowsIllegalArgumentException() {
-        // given
-        String name = "";
-        // when
-        // then
-        Assertions.assertThrows(IllegalArgumentException.class,
-                () -> detectorService.checkAllTokens(name));
+    private static Stream<Arguments> dataCheckAllTokensIllegalArgumentException() {
+        return Stream.of(
+                Arguments.of((String) null),
+                Arguments.of("")
+        );
     }
-
 
     @ParameterizedTest
     @MethodSource("dataCheckAllTokens")
     public void checkAllTokens_shouldReturnMaleFemaleInconclusive(String inputName, String expectedResults) {
         // given
         // when
-        String result = detectorService.checkAllTokens(inputName);
+        String result = detectorService.checkAllTokensInName(inputName);
         // then
         Assertions.assertEquals(result, expectedResults);
     }
@@ -104,5 +104,40 @@ class DetectorServiceImplTest {
                 Arguments.of("Xxxxxxx Adam", "MALE")
         );
     }
+
+    @ParameterizedTest
+    @MethodSource("dataGetTokensIllegalArgumentException")
+    public void getTokens_shouldThrowsIllegalArgumentException(Integer pageNo, Integer pageSize) {
+        // given
+        // when
+        // then
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> detectorService.getTokens(pageNo, pageSize));
+    }
+
+    private static Stream<Arguments> dataGetTokensIllegalArgumentException() {
+        return Stream.of(
+                Arguments.of(null, 4),
+                Arguments.of(1, null)
+        );
+    }
+
+    @Test
+    public void getTokens_shouldReturnListOfTokens() {
+        // given
+        List<String> expectedResults = dataGetTokensReturnsListoOfTokens();
+        int pageNo = 1;
+        int pageSize = 3;
+        // when
+        when(detectorRepository.getTokens(anyInt(), anyInt())).thenReturn(dataGetTokensReturnsListoOfTokens());
+        List<String> result = detectorService.getTokens(pageNo, pageSize);
+        // then
+        Assertions.assertEquals(result, expectedResults);
+    }
+
+    private List<String> dataGetTokensReturnsListoOfTokens() {
+        return List.of("Adrian", "Anna", "Karolina");
+    }
+
 
 }

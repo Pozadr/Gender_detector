@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.detector.service;
+package pl.pozadr.genderdetector.service;
 
 import java.util.List;
 
