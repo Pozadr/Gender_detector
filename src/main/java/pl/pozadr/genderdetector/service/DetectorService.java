@@ -1,5 +1,7 @@
 package pl.pozadr.genderdetector.service;
 
+import pl.pozadr.genderdetector.util.Gender;
+
 import java.util.List;
 
 public interface DetectorService {
