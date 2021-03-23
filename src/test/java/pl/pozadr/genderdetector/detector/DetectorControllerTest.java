@@ -77,7 +77,7 @@ public class DetectorControllerTest {
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$", Is.is(expectedGenderResponse)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.gender", Is.is(expectedGenderResponse)));
     }
 
     @ParameterizedTest
@@ -114,7 +114,7 @@ public class DetectorControllerTest {
         // given
         List<String> tokens = List.of("Adrian", "Anna", "Adam");
         int lastGivenToken = tokens.size() - 1;
-        String lastTokenJsonExpression = "$[" + (tokens.size() - 1) + "]";
+        String lastTokenJsonExpression = "$.tokens[" + (tokens.size() - 1) + "]";
         // when
         when(detectorService.getTokens(any(), any())).thenReturn(tokens);
         // then
@@ -124,8 +124,8 @@ public class DetectorControllerTest {
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Is.is(tokens.size())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Is.is(tokens.get(0))))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tokens.size()", Is.is(tokens.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.tokens[0]", Is.is(tokens.get(0))))
                 .andExpect(MockMvcResultMatchers.jsonPath(lastTokenJsonExpression, Is.is(tokens.get(lastGivenToken))));
     }
 
