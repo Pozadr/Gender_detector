@@ -40,7 +40,7 @@ public class DetectorControllerTest {
         // given
         // when
         // then
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/")
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/v1")
                 .param("name", name)
                 .param("method", method))
 
@@ -55,9 +55,9 @@ public class DetectorControllerTest {
         return Stream.of(
                 Arguments.of("Adrian Anna Adam", "UNDEFINED", "Given method is undefined."),
                 Arguments.of("Adrian Anna Adam", "", "Given method is undefined."),
-                Arguments.of("Adrian Anna Adam", null, "Given method is null."),
-                Arguments.of("", "MALE", "Given name is blank."),
-                Arguments.of(null, "MALE", "Given name is null.")
+                Arguments.of("Adrian Anna Adam", "null", "Given method is undefined."),
+                Arguments.of("", "FIRST_TOKEN", "Given name is blank."),
+                Arguments.of("", "ALL_TOKENS", "Given name is blank.")
         );
     }
 
@@ -65,12 +65,12 @@ public class DetectorControllerTest {
     public void shouldReturnGenderAndStatusOk() throws Exception {
         // given
         String name = "Adrian Anna Adam";
-        String method = "FIRST";
+        String method = "FIRST_TOKEN";
         String expectedGenderResponse = "MALE";
         // when
         when(detectorService.checkFirstTokenInName(any())).thenReturn(expectedGenderResponse);
         // then
-        mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/")
+        mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/v1")
                 .param("name", name)
                 .param("method", method))
 
@@ -88,7 +88,7 @@ public class DetectorControllerTest {
         // when
         when(detectorService.getTokens(any(), any())).thenReturn(tokens);
         // then
-        mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/tokens")
+        mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/v1/tokens")
                 .param("pageNo", "1")
                 .param("pageSize", String.valueOf(tokens.size())))
 

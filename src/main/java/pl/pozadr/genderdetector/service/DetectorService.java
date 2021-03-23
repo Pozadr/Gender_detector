@@ -1,13 +1,12 @@
 package pl.pozadr.genderdetector.service;
 
-import pl.pozadr.genderdetector.util.Gender;
 
 import java.util.List;
 
 public interface DetectorService {
-    String checkFirstTokenInName(String name);
+    String checkFirstTokenInName(String inputName);
 
-    String checkAllTokensInName(String name);
+    String checkAllTokensInName(String inputName);
 
     List<String> getTokens(Integer pageNo, Integer pageSize);
 }
