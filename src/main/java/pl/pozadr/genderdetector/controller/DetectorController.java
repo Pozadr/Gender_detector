@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import pl.pozadr.genderdetector.dto.GenderDto;
+import pl.pozadr.genderdetector.dto.TokensDto;
 import pl.pozadr.genderdetector.service.DetectorService;
 import pl.pozadr.genderdetector.validators.ControllerParametersValidator;
 
@@ -25,7 +27,7 @@ public class DetectorController {
 
 
     @GetMapping("/v1")
-    public ResponseEntity<String> getGender(@RequestParam String name, @RequestParam String method) {
+    public ResponseEntity<GenderDto> getGender(@RequestParam String name, @RequestParam String method) {
         boolean parametersValid = ControllerParametersValidator.validateGetGenderParams(name, method);
         boolean isMethodFirstToken = ControllerParametersValidator.isMethodFirstToken(method);
 
@@ -33,13 +35,14 @@ public class DetectorController {
                 detectorService.checkFirstTokenInName(name)
                 : detectorService.checkAllTokensInName(name);
 
-        return ResponseEntity.ok(gender);
+        return ResponseEntity.ok(new GenderDto(name, method, gender));
     }
 
     @GetMapping("/v1/tokens")
-    public ResponseEntity<List<String>> getTokens(@RequestParam int pageNo, @RequestParam int pageSize) {
+    public ResponseEntity<TokensDto> getTokens(@RequestParam int pageNo, @RequestParam int pageSize) {
         ControllerParametersValidator.validateGetTokensParams(pageNo, pageSize);
-        return ResponseEntity.ok(detectorService.getTokens(pageNo, pageSize));
+        List<String> tokens = detectorService.getTokens(pageNo, pageSize);
+        return ResponseEntity.ok(new TokensDto(pageNo, pageSize, tokens));
     }
 
 }
