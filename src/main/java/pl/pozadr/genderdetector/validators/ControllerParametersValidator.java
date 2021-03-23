@@ -1,10 +1,7 @@
 package pl.pozadr.genderdetector.validators;
 
 import pl.pozadr.genderdetector.config.AppConstants;
-import pl.pozadr.genderdetector.exceptions.MethodParameterException;
-import pl.pozadr.genderdetector.exceptions.NameParameterException;
-import pl.pozadr.genderdetector.exceptions.PageNumberParameterException;
-import pl.pozadr.genderdetector.exceptions.PageSizeParameterException;
+import pl.pozadr.genderdetector.exceptions.MethodParameterNotValidException;
 
 public final class ControllerParametersValidator {
     private ControllerParametersValidator() {
@@ -28,7 +25,7 @@ public final class ControllerParametersValidator {
     private static boolean isPageSizeValid(int pageSize) {
         if (pageSize > AppConstants.PAGE_SIZE_LIMIT
                 || pageSize < 0) {
-            throw new PageSizeParameterException("Given pageSize is out of range. Minimum = 0 , maximum = "
+            throw new MethodParameterNotValidException("Given pageSize is out of range. Minimum = 0 , maximum = "
                     + AppConstants.PAGE_SIZE_LIMIT);
         }
         return true;
@@ -36,7 +33,7 @@ public final class ControllerParametersValidator {
 
     private static boolean isPageNoValid(int pageNo) {
         if (pageNo < 0) {
-            throw new PageNumberParameterException("Given pageNo is out of range. Minimum = 0 , maximum =  "
+            throw new MethodParameterNotValidException("Given pageNo is out of range. Minimum = 0 , maximum =  "
                     + Integer.MAX_VALUE);
         }
         return true;
@@ -44,7 +41,7 @@ public final class ControllerParametersValidator {
 
     private static boolean isNameParamValid(String name) {
         if (name.isBlank()) {
-            throw new NameParameterException("Given name is blank.");
+            throw new MethodParameterNotValidException("Given name is blank.");
         }
         return true;
     }
@@ -56,7 +53,7 @@ public final class ControllerParametersValidator {
         if (isMethodFirstToken || isMethodAllTokens) {
             return true;
         }
-        throw new MethodParameterException("Given method is undefined.");
+        throw new MethodParameterNotValidException("Given method is undefined.");
     }
 
 }
