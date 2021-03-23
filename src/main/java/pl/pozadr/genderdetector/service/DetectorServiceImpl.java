@@ -25,13 +25,9 @@ public class DetectorServiceImpl implements DetectorService {
     public List<String> getTokens(Integer pageNo, Integer pageSize) {
         if (pageNo == null) {
             throw new IllegalArgumentException("Given pageNo is null");
-        } else if (pageNo > Integer.MAX_VALUE || pageNo < Integer.MIN_VALUE) {
-            throw new IllegalArgumentException("Given pageNo is out of Integer range.");
         }
         if (pageSize == null) {
             throw new IllegalArgumentException("Given pageSize is null");
-        } else if (pageSize > Integer.MAX_VALUE || pageSize < Integer.MIN_VALUE) {
-            throw new IllegalArgumentException("Given pageSize is out of Integer range.");
         }
 
         return getHalfMaleAndHalfFemaleTokens(pageNo, pageSize);
@@ -89,17 +85,27 @@ public class DetectorServiceImpl implements DetectorService {
         return genderMarker;
     }
 
-    private List<String> getHalfMaleAndHalfFemaleTokens(int pageNo, long pageSize) {
-        long firstToken = (long) pageNo * pageSize / 2;
-        long lastToken = firstToken + (pageSize / 2);
+    private List<String> getHalfMaleAndHalfFemaleTokens(Integer pageNo, Integer pageSize) {
+        long start = getPaginationStart(pageNo, pageSize);
+        long end = getPaginationEnd(start, pageSize);
 
-        List<String> maleTokens = getMaleTokensFromRange(firstToken, lastToken);
-        List<String> femaleTokens = getFemaleTokensFromRange(firstToken, lastToken);
+        List<String> maleTokens = getMaleTokensFromRange(start, end);
+        List<String> femaleTokens =
+                (pageSize % 2 == 0) ? getFemaleTokensFromRange(start, end)
+                        : getFemaleTokensFromRange(start, end - 1);
 
         List<String> allTokens = new ArrayList<>();
         allTokens.addAll(maleTokens);
         allTokens.addAll(femaleTokens);
         return allTokens;
+    }
+
+    private long getPaginationStart(Integer pageNo, Integer pageSize) {
+        return (pageNo == 1) ? 1 : Math.round(pageNo * pageSize / 4.0) + 1;
+    }
+
+    private long getPaginationEnd(long start, Integer pageSize) {
+        return (start == 1) ? Math.round(pageSize / 2.0) : start - 1 + Math.round(pageSize / 2.0);
     }
 
     private List<String> getMaleTokensFromRange(long firstToken, long lastToken) {

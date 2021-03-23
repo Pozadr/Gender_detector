@@ -56,7 +56,7 @@ public class DetectorRepositoryImpl implements DetectorRepository {
     @Override
     public List<String> getTokens(String pathToFile, long first, long last) {
         List<String> result = new ArrayList<>();
-        long currentTokenPosition = 0L;
+        long currentTokenPosition = 1L;
 
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(pathToFile))) {
             String fileLineContent;
