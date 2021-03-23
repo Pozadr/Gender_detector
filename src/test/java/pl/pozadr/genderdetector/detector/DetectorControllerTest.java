@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import pl.pozadr.genderdetector.config.AppConstants;
 import pl.pozadr.genderdetector.controller.DetectorController;
 import pl.pozadr.genderdetector.service.DetectorService;
 
@@ -34,8 +35,8 @@ public class DetectorControllerTest {
 
 
     @ParameterizedTest
-    @MethodSource("dataBadRequest")
-    public void shouldReturnBadRequestStatusWithMessage(String name, String method, String expectedMessage)
+    @MethodSource("getGender_dataBadRequest")
+    public void getGender_shouldReturnBadRequestStatusWithMessage(String name, String method, String expectedMessage)
             throws Exception {
         // given
         // when
@@ -51,7 +52,7 @@ public class DetectorControllerTest {
         Assertions.assertEquals(expectedMessage, resultMessage);
     }
 
-    private static Stream<Arguments> dataBadRequest() {
+    private static Stream<Arguments> getGender_dataBadRequest() {
         return Stream.of(
                 Arguments.of("Adrian Anna Adam", "UNDEFINED", "Given method is undefined."),
                 Arguments.of("Adrian Anna Adam", "", "Given method is undefined."),
@@ -62,7 +63,7 @@ public class DetectorControllerTest {
     }
 
     @Test
-    public void shouldReturnGenderAndStatusOk() throws Exception {
+    public void getGender_shouldReturnStatusOkAndGenderAsBody() throws Exception {
         // given
         String name = "Adrian Anna Adam";
         String method = "FIRST_TOKEN";
@@ -76,11 +77,40 @@ public class DetectorControllerTest {
 
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0]", Is.is(expectedGenderResponse)));
+                .andExpect(MockMvcResultMatchers.jsonPath("$", Is.is(expectedGenderResponse)));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getTokens_dataBadRequest")
+    public void getTokens_shouldReturnBadRequestStatusWithMessage(int pageNo, int pageSize, String expectedMessage)
+            throws Exception {
+        // given
+        // when
+        // then
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/gender-detector/v1/tokens")
+                .param("pageNo", String.valueOf(pageNo))
+                .param("pageSize", String.valueOf(pageSize)))
+
+                .andExpect(MockMvcResultMatchers.status().is(400))
+                .andReturn();
+
+        String resultMessage = mvcResult.getResolvedException().getMessage();
+        Assertions.assertEquals(expectedMessage, resultMessage);
+    }
+
+    private static Stream<Arguments> getTokens_dataBadRequest() {
+        return Stream.of(
+                Arguments.of(-1, 10,
+                        "Given pageNo is out of range. Minimum = 0 , maximum =  " + Integer.MAX_VALUE),
+                Arguments.of(1, -1,
+                        "Given pageSize is out of range. Minimum = 0 , maximum = " + AppConstants.PAGE_SIZE_LIMIT),
+                Arguments.of(1, AppConstants.PAGE_SIZE_LIMIT + 1,
+                        "Given pageSize is out of range. Minimum = 0 , maximum = " + AppConstants.PAGE_SIZE_LIMIT)
+        );
     }
 
     @Test
-    public void shouldReturnTokens() throws Exception {
+    public void getTokens_shouldReturnTokensInGivenRange() throws Exception {
         // given
         List<String> tokens = List.of("Adrian", "Anna", "Adam");
         int lastGivenToken = tokens.size() - 1;
