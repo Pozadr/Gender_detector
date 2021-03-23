@@ -1,5 +1,7 @@
 package pl.pozadr.genderdetector.controller;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +16,10 @@ import pl.pozadr.genderdetector.validators.ControllerParametersValidator;
 
 import java.util.List;
 
-
+/**
+ * Application API. Provides a description of Swagger for readability in the Swagger UI.
+ * http://localhost:8080/swagger-ui.html
+ */
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, path = "/gender-detector")
 @RestController
 public class DetectorController {
@@ -25,9 +30,12 @@ public class DetectorController {
         this.detectorService = detectorService;
     }
 
-
     @GetMapping("/v1")
-    public ResponseEntity<GenderDto> getGender(@RequestParam String name, @RequestParam String method) {
+    @ApiOperation(value = "Checks the gender according to the method on the given name.", response = GenderDto.class)
+    public ResponseEntity<GenderDto> getGender(
+            @ApiParam(value = "Name to check gender.", required = true) @RequestParam String name,
+            @ApiParam(value = "Method: FIRST_TOKEN / ALL_TOKENS", required = true) @RequestParam String method
+    ) {
         boolean parametersValid = ControllerParametersValidator.validateGetGenderParams(name, method);
         boolean isMethodFirstToken = ControllerParametersValidator.isMethodFirstToken(method);
 
@@ -39,7 +47,11 @@ public class DetectorController {
     }
 
     @GetMapping("/v1/tokens")
-    public ResponseEntity<TokensDto> getTokens(@RequestParam int pageNo, @RequestParam int pageSize) {
+    @ApiOperation(value = "Gets tokens in the pagination range.", response = TokensDto.class)
+    public ResponseEntity<TokensDto> getTokens(
+            @ApiParam(value = "Page number.", required = true) @RequestParam int pageNo,
+            @ApiParam(value = "Page size", required = true) @RequestParam int pageSize
+    ) {
         ControllerParametersValidator.validateGetTokensParams(pageNo, pageSize);
         List<String> tokens = detectorService.getTokens(pageNo, pageSize);
         return ResponseEntity.ok(new TokensDto(pageNo, pageSize, tokens));
