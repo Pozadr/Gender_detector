@@ -29,7 +29,6 @@ public class DetectorServiceImpl implements DetectorService {
         if (pageSize == null) {
             throw new IllegalArgumentException("Given pageSize is null");
         }
-
         return getHalfMaleAndHalfFemaleTokens(pageNo, pageSize);
     }
 
@@ -41,7 +40,7 @@ public class DetectorServiceImpl implements DetectorService {
             throw new IllegalArgumentException("Given name is blank");
         }
 
-        String firstToken = inputName.split(" ")[0];
+        String firstToken = inputName.trim().split(" +")[0];
         if (isMale(firstToken)) {
             return Gender.MALE.toString();
         }
@@ -59,12 +58,12 @@ public class DetectorServiceImpl implements DetectorService {
             throw new IllegalArgumentException("Given name is blank");
         }
 
-        String[] inputNameArr = inputName.split(" ");
+        String[] inputNameArr = inputName.trim().split(" +");
         int genderMarker = getGenderMarker(inputNameArr);
-        return getGenderFromMarker(genderMarker);
+        return getGenderFromGenderMarker(genderMarker);
     }
 
-    private String getGenderFromMarker(int genderMarker) {
+    private String getGenderFromGenderMarker(int genderMarker) {
         if (genderMarker > 0) {
             return Gender.MALE.toString();
         } else if (genderMarker < 0) {
@@ -76,9 +75,9 @@ public class DetectorServiceImpl implements DetectorService {
     private int getGenderMarker(String[] inputNameArr) {
         int genderMarker = 0;
         for (String token : inputNameArr) {
-            if (isMale(token)) {
+            if (isMale(token.trim())) {
                 genderMarker++;
-            } else if (isFemale(token)) {
+            } else if (isFemale(token.trim())) {
                 genderMarker--;
             }
         }
@@ -123,6 +122,5 @@ public class DetectorServiceImpl implements DetectorService {
     private boolean isFemale(String oneToken) {
         return detectorRepository.isContaining(AppConstants.PATH_TO_FEMALE_FLAT_FILE, oneToken);
     }
-
 
 }

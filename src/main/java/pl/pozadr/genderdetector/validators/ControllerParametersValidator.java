@@ -18,7 +18,7 @@ public final class ControllerParametersValidator {
     }
 
     public static boolean isMethodFirstToken(String method) {
-        return method.equalsIgnoreCase(CheckMethod.FIRST_TOKEN.toString());
+        return method.trim().equalsIgnoreCase(CheckMethod.FIRST_TOKEN.toString());
     }
 
 
@@ -47,8 +47,8 @@ public final class ControllerParametersValidator {
     }
 
     private static boolean isMethodParamValid(String method) {
-        boolean isMethodFirstToken = CheckMethod.FIRST_TOKEN.toString().equalsIgnoreCase(method);
-        boolean isMethodAllTokens = CheckMethod.ALL_TOKENS.toString().equalsIgnoreCase(method);
+        boolean isMethodFirstToken = CheckMethod.FIRST_TOKEN.toString().equalsIgnoreCase(method.trim());
+        boolean isMethodAllTokens = CheckMethod.ALL_TOKENS.toString().equalsIgnoreCase(method.trim());
 
         if (isMethodFirstToken || isMethodAllTokens) {
             return true;

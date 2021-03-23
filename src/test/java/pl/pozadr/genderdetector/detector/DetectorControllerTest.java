@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.detector;
+package pl.pozadr.genderdetector.genderdetector;
 
 import org.hamcrest.core.Is;
 import org.junit.jupiter.api.Assertions;
