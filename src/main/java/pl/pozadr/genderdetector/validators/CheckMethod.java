@@ -1,6 +1,6 @@
 package pl.pozadr.genderdetector.util;
 
-public enum TokenCheckMethod {
+public enum CheckMethod {
     FIRST_TOKEN,
     ALL_TOKENS
 }
