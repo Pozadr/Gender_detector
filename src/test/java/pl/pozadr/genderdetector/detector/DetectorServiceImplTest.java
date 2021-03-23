@@ -63,11 +63,19 @@ class DetectorServiceImplTest {
     private static Stream<Arguments> dataCheckFirstToken() {
         return Stream.of(
                 Arguments.of("Adrian Adam", "MALE", true, false),
-                Arguments.of("Adrian Anna", "MALE", true, false),
-                Arguments.of("Karolina Adam", "FEMALE", false, true),
+                Arguments.of("   Adrian    Adam   ", "MALE", true, false),
+                Arguments.of("ADriAn ANnA", "MALE", true, false),
+                Arguments.of("   AdRIaN  AdrIan    marIA      AnNa  ", "MALE", true, false),
+
                 Arguments.of("Anna Katarzyna", "FEMALE", false, true),
-                Arguments.of("Xxxxxxx Katarzyna", "INCONCLUSIVE", false, false),
-                Arguments.of("Xxxxxxx Adam", "INCONCLUSIVE", false, false)
+                Arguments.of("   Anna     Katarzyna     ", "FEMALE", false, true),
+                Arguments.of("KaROlinA AdAm", "FEMALE", false, true),
+                Arguments.of("    ANNa    KataRZyna   ", "FEMALE", false, true),
+
+                Arguments.of("Xxxx Katarzyna", "INCONCLUSIVE", false, false),
+                Arguments.of("   Xxxx    Katarzyna    ", "INCONCLUSIVE", false, false),
+                Arguments.of("XxXXxZx ADaM", "INCONCLUSIVE", false, false),
+                Arguments.of("     XxXXxZx    ADaM    ", "INCONCLUSIVE", false, false)
         );
     }
 
@@ -107,15 +115,24 @@ class DetectorServiceImplTest {
 
     private static Stream<Arguments> dataCheckAllTokens() {
         return Stream.of(
-                Arguments.of("Adrian Adam", "MALE", true, false),
+                Arguments.of("Adrian Adam Anna", "MALE", true, false),
+                Arguments.of("  Adrian    Adam    Anna    ", "MALE", true, false),
+                Arguments.of("ADRIan AdAM ANnA", "MALE", true, false),
+                Arguments.of("    ADRIan    AdAM   ANnA   ", "MALE", true, false),
+
                 Arguments.of("Adrian Anna", "INCONCLUSIVE", false, false),
                 Arguments.of("Karolina Adam", "INCONCLUSIVE", false, false),
-                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
-                Arguments.of("Anna Adrian Katarzyna Adam", "INCONCLUSIVE", false, false),
-                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
-                Arguments.of("Xxxxxxx Katarzyna", "FEMALE", false, true),
+                Arguments.of("  Karolina   Adam   ", "INCONCLUSIVE", false, false),
+                Arguments.of("KaROlinA ADAm", "INCONCLUSIVE", false, false),
+                Arguments.of("   KaROlinA    ADAm  xxXXZZzz", "INCONCLUSIVE", false, false),
+                Arguments.of("Xxxxxxx Katarzyna", "INCONCLUSIVE", false, false),
                 Arguments.of("Xxxx Yyyy Zzzz", "INCONCLUSIVE", false, false),
-                Arguments.of("Xxxxxxx Adam", "MALE", true, false)
+                Arguments.of("Xxxxxxx Adam", "INCONCLUSIVE", false, false),
+                Arguments.of("  ANna    AdriAn    KaTArzyna   ADAm   ", "INCONCLUSIVE", false, false),
+
+                Arguments.of("Anna Katarzyna", "FEMALE", false, true),
+                Arguments.of("   Anna   Katarzyna   ", "FEMALE", false, true),
+                Arguments.of("   AnnA    KaTArzyna   ", "FEMALE", false, true)
         );
     }
 
