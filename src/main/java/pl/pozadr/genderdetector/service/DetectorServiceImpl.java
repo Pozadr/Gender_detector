@@ -11,6 +11,9 @@ import pl.pozadr.genderdetector.util.Gender;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Logic layer of application.
+ */
 @Service
 public class DetectorServiceImpl implements DetectorService {
     Logger logger = LoggerFactory.getLogger(DetectorServiceImpl.class);
@@ -21,6 +24,14 @@ public class DetectorServiceImpl implements DetectorService {
         this.detectorRepository = detectorRepository;
     }
 
+    /**
+     * Returns list of male and female tokens.
+     * Uses pagination to get tokens from flatFile.
+     *
+     * @param pageNo   - pagination page number
+     * @param pageSize - pagination page size
+     * @return - list of tokens
+     */
     @Override
     public List<String> getTokens(Integer pageNo, Integer pageSize) {
         if (pageNo == null) {
@@ -32,6 +43,13 @@ public class DetectorServiceImpl implements DetectorService {
         return getHalfMaleAndHalfFemaleTokens(pageNo, pageSize);
     }
 
+    /**
+     * Checks first token by given name.
+     * Example: the given name: Adrian Anna Kowalski; response: MALE; cause first one: Adrian.
+     *
+     * @param inputName - input full name.
+     * @return - gender: MALE/FEMALE/INCONCLUSIVE
+     */
     @Override
     public String checkFirstTokenInName(String inputName) {
         if (inputName == null) {
@@ -50,6 +68,13 @@ public class DetectorServiceImpl implements DetectorService {
         return Gender.INCONCLUSIVE.toString();
     }
 
+    /**
+     * Checks all tokens by given name.
+     * Example: the given name: Adrian Adam Anna Kowalski; response: MALE; cause: Adrian, Adam > Anna.
+     *
+     * @param inputName - input full name.
+     * @return - gender: MALE/FEMALE/INCONCLUSIVE
+     */
     @Override
     public String checkAllTokensInName(String inputName) {
         if (inputName == null) {
@@ -63,6 +88,15 @@ public class DetectorServiceImpl implements DetectorService {
         return getGenderFromGenderMarker(genderMarker);
     }
 
+    /**
+     * Encrypt gender marker to gender.
+     * gender marker possitive -> MALE
+     * gender marker negative -> FEMALE
+     * gender marker equals 0 -> INCONCLUSIVE
+     *
+     * @param genderMarker - integer value of gender possibility.
+     * @return - MALE/FEMALE/INCONCLUSIVE
+     */
     private String getGenderFromGenderMarker(int genderMarker) {
         if (genderMarker > 0) {
             return Gender.MALE.toString();
@@ -72,6 +106,12 @@ public class DetectorServiceImpl implements DetectorService {
         return Gender.INCONCLUSIVE.toString();
     }
 
+    /**
+     * Creates the gender marker which describes possibility to be MALE/FEMALE/INCONCLUSIVE.
+     *
+     * @param inputNameArr - name split to tokens array
+     * @return - integer value of gender possibility.
+     */
     private int getGenderMarker(String[] inputNameArr) {
         int genderMarker = 0;
         for (String token : inputNameArr) {
@@ -84,6 +124,14 @@ public class DetectorServiceImpl implements DetectorService {
         return genderMarker;
     }
 
+    /**
+     * Uses pagination to get tokens from flatFile.
+     * Returns list of tokens in which half are the male tokens and half are the female tokens.
+     *
+     * @param pageNo   - pagination page number
+     * @param pageSize - pagination page size
+     * @return - list of tokens
+     */
     private List<String> getHalfMaleAndHalfFemaleTokens(Integer pageNo, Integer pageSize) {
         long start = getPaginationStart(pageNo, pageSize);
         long end = getPaginationEnd(start, pageSize);

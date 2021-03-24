@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Processes local FlatFiles.
+ * Uses different algorithms regarding application configuration.
+ */
 @Repository
 public class DetectorRepositoryImpl implements DetectorRepository {
 
@@ -26,6 +30,9 @@ public class DetectorRepositoryImpl implements DetectorRepository {
     private String algorithmVersion;
     Logger logger = LoggerFactory.getLogger(DetectorRepositoryImpl.class);
 
+    /**
+     * On start of application logs INFO message, which algorithm is used.
+     */
     @EventListener(ApplicationReadyEvent.class)
     public void algorithmVersionInfo() {
         switch (algorithmVersion.toUpperCase()) {
@@ -40,6 +47,13 @@ public class DetectorRepositoryImpl implements DetectorRepository {
         }
     }
 
+    /**
+     * Handles, which algorithm should be used to process the file.
+     *
+     * @param pathToFile - path to local file.
+     * @param input      - input data to compere.
+     * @return - true/false
+     */
     @Override
     public boolean isContaining(String pathToFile, String input) {
         switch (algorithmVersion.toUpperCase()) {
@@ -54,6 +68,14 @@ public class DetectorRepositoryImpl implements DetectorRepository {
         }
     }
 
+    /**
+     * Returns tokens from file in requested range.
+     *
+     * @param pathToFile - path to local file.
+     * @param first      - first position of data in file.
+     * @param last       - last position of data in file.
+     * @return - List<String> tokens
+     */
     @Override
     public List<String> getTokens(String pathToFile, long first, long last) {
         List<String> result = new ArrayList<>();
@@ -77,6 +99,14 @@ public class DetectorRepositoryImpl implements DetectorRepository {
         return result;
     }
 
+    /**
+     * Uses BufferedReader to process the file.
+     * Checks if the file contains given input.
+     *
+     * @param pathToFile - path to local file.
+     * @param input      - input data to compere.
+     * @return - true/false
+     */
     private boolean isContainingBufferedReader(String pathToFile, String input) {
         try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(pathToFile))) {
             String fileLineContent;
@@ -96,6 +126,14 @@ public class DetectorRepositoryImpl implements DetectorRepository {
         return false;
     }
 
+    /**
+     * Uses Stream API to process the file.
+     * Checks if the file contains given input.
+     *
+     * @param pathToFile - path to local file.
+     * @param input      - input data to compere.
+     * @return - true/false
+     */
     private boolean isContainingStreamApi(String pathToFile, String input) {
         try (Stream<String> inputStream = Files.lines(Paths.get(pathToFile), StandardCharsets.UTF_8)) {
             return inputStream.anyMatch(line -> line.equalsIgnoreCase(input));

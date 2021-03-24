@@ -2,6 +2,10 @@ package pl.pozadr.genderdetector.dto;
 
 import java.util.List;
 
+/**
+ * Data Transfer Object.
+ * Contains data about API request and response.
+ */
 public class TokensDto {
     Integer requestPageNumber;
     Integer requestPageSize;

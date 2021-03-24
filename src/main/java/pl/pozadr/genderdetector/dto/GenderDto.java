@@ -1,5 +1,9 @@
 package pl.pozadr.genderdetector.dto;
 
+/**
+ * Data Transfer Object.
+ * Contains data about API request and response.
+ */
 public class GenderDto {
     private String requestName;
     private String requestMethod;
