@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ServerErrorException;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -66,10 +67,12 @@ public class DetectorRepositoryImpl implements DetectorRepository {
                 }
                 currentTokenPosition++;
             }
-        } catch (FileNotFoundException e) {
-            logger.error("Error: file not found. {}", e.getMessage());
-        } catch (IOException e) {
-            logger.error("Error during reading data. {}", e.getMessage());
+        } catch (FileNotFoundException exp) {
+            logger.error("Error: file not found. {}", exp.getMessage());
+            throw new ServerErrorException("File processing error.", exp);
+        } catch (IOException exp) {
+            logger.error("Error during reading data. {}", exp.getMessage());
+            throw new ServerErrorException("File processing error.", exp);
         }
         return result;
     }
@@ -82,10 +85,13 @@ public class DetectorRepositoryImpl implements DetectorRepository {
                     return true;
                 }
             }
-        } catch (FileNotFoundException e) {
-            logger.error("Error: file not found. {}", e.getMessage());
-        } catch (IOException e) {
-            logger.error("Error during reading data. {}", e.getMessage());
+        } catch (FileNotFoundException exp) {
+            logger.error("Error: file not found. {}", exp.getMessage());
+            throw new ServerErrorException("File processing error.", exp);
+
+        } catch (IOException exp) {
+            logger.error("Error during reading data. {}", exp.getMessage());
+            throw new ServerErrorException("File processing error.", exp);
         }
         return false;
     }
@@ -93,10 +99,10 @@ public class DetectorRepositoryImpl implements DetectorRepository {
     private boolean isContainingStreamApi(String pathToFile, String input) {
         try (Stream<String> inputStream = Files.lines(Paths.get(pathToFile), StandardCharsets.UTF_8)) {
             return inputStream.anyMatch(line -> line.equalsIgnoreCase(input));
-        } catch (IOException e) {
-            logger.error("Error during reading data. {}", e.getMessage());
+        } catch (IOException exp) {
+            logger.error("Error during reading data. {}", exp.getMessage());
+            throw new ServerErrorException("File processing error.", exp);
         }
-        return false;
     }
 
 }
