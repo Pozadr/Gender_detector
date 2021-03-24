@@ -54,7 +54,7 @@ To set up method of files processing use _application.properties_. The default v
 
       algorithm-version=<BUFFERED_READER / STREAM_API>
 
-To pack application to _.jar_ file
+To pack application to _.jar_ file use _jar_build_ branch of project.
    
       mvn package
 
