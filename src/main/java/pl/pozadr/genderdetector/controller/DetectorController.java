@@ -3,6 +3,7 @@ package pl.pozadr.genderdetector.controller;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pl.pozadr.genderdetector.dto.GenderDto;
 import pl.pozadr.genderdetector.dto.TokensDto;
 import pl.pozadr.genderdetector.service.DetectorService;
-import pl.pozadr.genderdetector.validators.ControllerParametersValidator;
+import pl.pozadr.genderdetector.validators.controller.ControllerGetGenderValidator;
+import pl.pozadr.genderdetector.validators.controller.ControllerGetTokensValidator;
 
 import java.util.List;
 
@@ -24,6 +26,8 @@ import java.util.List;
 @RestController
 public class DetectorController {
     private final DetectorService detectorService;
+    @Value("${page-size-limit}")
+    private int pageSizeLimit;
 
     @Autowired
     public DetectorController(DetectorService detectorService) {
@@ -36,8 +40,8 @@ public class DetectorController {
             @ApiParam(value = "Name to check gender.", required = true) @RequestParam String name,
             @ApiParam(value = "Method: FIRST_TOKEN / ALL_TOKENS", required = true) @RequestParam String method
     ) {
-        boolean parametersValid = ControllerParametersValidator.validateGetGenderParams(name, method);
-        boolean isMethodFirstToken = ControllerParametersValidator.isMethodFirstToken(method);
+        boolean parametersValid = ControllerGetGenderValidator.validateParams(name, method);
+        boolean isMethodFirstToken = ControllerGetGenderValidator.isMethodFirstToken(method);
 
         String gender = (parametersValid && isMethodFirstToken) ?
                 detectorService.checkFirstTokenInName(name)
@@ -52,7 +56,7 @@ public class DetectorController {
             @ApiParam(value = "Page number.", required = true) @RequestParam int pageNo,
             @ApiParam(value = "Page size", required = true) @RequestParam int pageSize
     ) {
-        ControllerParametersValidator.validateGetTokensParams(pageNo, pageSize);
+        ControllerGetTokensValidator.validateGetTokensParams(pageNo, pageSize, pageSizeLimit);
         List<String> tokens = detectorService.getTokens(pageNo, pageSize);
         return ResponseEntity.ok(new TokensDto(pageNo, pageSize, tokens));
     }

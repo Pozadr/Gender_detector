@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.validators;
+package pl.pozadr.genderdetector.validators.controller;
 
 public enum CheckMethod {
     FIRST_TOKEN,
