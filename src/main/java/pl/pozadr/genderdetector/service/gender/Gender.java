@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.util;
+package pl.pozadr.genderdetector.service.gender;
 
 public enum Gender {
     MALE,

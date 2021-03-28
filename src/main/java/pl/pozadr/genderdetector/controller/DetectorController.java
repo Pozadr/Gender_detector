@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.pozadr.genderdetector.dto.GenderDto;
 import pl.pozadr.genderdetector.dto.TokensDto;
-import pl.pozadr.genderdetector.service.DetectorService;
+import pl.pozadr.genderdetector.service.gender.GenderService;
+import pl.pozadr.genderdetector.service.tokens.TokensService;
 import pl.pozadr.genderdetector.validators.controller.ControllerGetGenderValidator;
 import pl.pozadr.genderdetector.validators.controller.ControllerGetTokensValidator;
 
@@ -25,13 +26,15 @@ import java.util.List;
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, path = "/gender-detector")
 @RestController
 public class DetectorController {
-    private final DetectorService detectorService;
+    private final GenderService genderService;
+    private final TokensService tokensService;
     @Value("${page-size-limit}")
     private int pageSizeLimit;
 
     @Autowired
-    public DetectorController(DetectorService detectorService) {
-        this.detectorService = detectorService;
+    public DetectorController(GenderService genderService, TokensService tokensService) {
+        this.genderService = genderService;
+        this.tokensService = tokensService;
     }
 
     @GetMapping("/v1")
@@ -40,13 +43,8 @@ public class DetectorController {
             @ApiParam(value = "Name to check gender.", required = true) @RequestParam String name,
             @ApiParam(value = "Method: FIRST_TOKEN / ALL_TOKENS", required = true) @RequestParam String method
     ) {
-        boolean parametersValid = ControllerGetGenderValidator.validateParams(name, method);
-        boolean isMethodFirstToken = ControllerGetGenderValidator.isMethodFirstToken(method);
-
-        String gender = (parametersValid && isMethodFirstToken) ?
-                detectorService.checkFirstTokenInName(name)
-                : detectorService.checkAllTokensInName(name);
-
+        ControllerGetGenderValidator.validateParams(name, method);
+        String gender = genderService.checkGender(name, method);
         return ResponseEntity.ok(new GenderDto(name, method, gender));
     }
 
@@ -57,7 +55,7 @@ public class DetectorController {
             @ApiParam(value = "Page size", required = true) @RequestParam int pageSize
     ) {
         ControllerGetTokensValidator.validateGetTokensParams(pageNo, pageSize, pageSizeLimit);
-        List<String> tokens = detectorService.getTokens(pageNo, pageSize);
+        List<String> tokens = tokensService.getTokens(pageNo, pageSize);
         return ResponseEntity.ok(new TokensDto(pageNo, pageSize, tokens));
     }
 

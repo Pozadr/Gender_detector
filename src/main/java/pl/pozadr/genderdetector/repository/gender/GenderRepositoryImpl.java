@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.repository;
+package pl.pozadr.genderdetector.repository.gender;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -24,11 +22,11 @@ import java.util.stream.Stream;
  * Uses different algorithms regarding application configuration.
  */
 @Repository
-public class DetectorRepositoryImpl implements DetectorRepository {
+public class GenderRepositoryImpl implements GenderRepository {
 
     @Value("${algorithm-version}")
     private String algorithmVersion;
-    Logger logger = LoggerFactory.getLogger(DetectorRepositoryImpl.class);
+    Logger logger = LoggerFactory.getLogger(GenderRepositoryImpl.class);
 
     /**
      * On start of application logs INFO message, which algorithm is used.
@@ -66,37 +64,6 @@ public class DetectorRepositoryImpl implements DetectorRepository {
                 return isContainingStreamApi(pathToFile, input);
             }
         }
-    }
-
-    /**
-     * Returns tokens from file in requested range.
-     *
-     * @param pathToFile - path to local file.
-     * @param first      - first position of data in file.
-     * @param last       - last position of data in file.
-     * @return - List<String> tokens
-     */
-    @Override
-    public List<String> getTokens(String pathToFile, long first, long last) {
-        List<String> result = new ArrayList<>();
-        long currentTokenPosition = 1L;
-
-        try (BufferedReader fileBufferReader = new BufferedReader(new FileReader(pathToFile))) {
-            String fileLineContent;
-            while ((fileLineContent = fileBufferReader.readLine()) != null) {
-                if (currentTokenPosition >= first && currentTokenPosition <= last) {
-                    result.add(fileLineContent);
-                }
-                currentTokenPosition++;
-            }
-        } catch (FileNotFoundException exp) {
-            logger.error("Error: file not found. {}", exp.getMessage());
-            throw new ServerErrorException("File processing error.", exp);
-        } catch (IOException exp) {
-            logger.error("Error during reading data. {}", exp.getMessage());
-            throw new ServerErrorException("File processing error.", exp);
-        }
-        return result;
     }
 
     /**

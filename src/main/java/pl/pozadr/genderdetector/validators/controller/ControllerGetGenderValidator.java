@@ -1,6 +1,7 @@
 package pl.pozadr.genderdetector.validators.controller;
 
 import pl.pozadr.genderdetector.exceptions.MethodParameterNotValidException;
+import pl.pozadr.genderdetector.util.CheckGenderMethods;
 
 public class ControllerGetGenderValidator {
     private ControllerGetGenderValidator() {
@@ -19,17 +20,13 @@ public class ControllerGetGenderValidator {
     }
 
     private static boolean isMethodParamValid(String method) {
-        boolean isMethodFirstToken = CheckMethod.FIRST_TOKEN.toString().equalsIgnoreCase(method.trim());
-        boolean isMethodAllTokens = CheckMethod.ALL_TOKENS.toString().equalsIgnoreCase(method.trim());
+        boolean isMethodFirstToken = CheckGenderMethods.FIRST_TOKEN.toString().equalsIgnoreCase(method.trim());
+        boolean isMethodAllTokens = CheckGenderMethods.ALL_TOKENS.toString().equalsIgnoreCase(method.trim());
 
         if (isMethodFirstToken || isMethodAllTokens) {
             return true;
         }
         throw new MethodParameterNotValidException("Given method is undefined.");
-    }
-
-    public static boolean isMethodFirstToken(String method) {
-        return method.trim().equalsIgnoreCase(CheckMethod.FIRST_TOKEN.toString());
     }
 
 }
