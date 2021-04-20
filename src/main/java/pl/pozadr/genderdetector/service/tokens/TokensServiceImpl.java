@@ -2,7 +2,8 @@ package pl.pozadr.genderdetector.service.tokens;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.pozadr.genderdetector.repository.tokens.TokensRepository;
+import pl.pozadr.genderdetector.repository.TokensRepository;
+import pl.pozadr.genderdetector.util.Gender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +11,10 @@ import java.util.List;
 @Service
 public class TokensServiceImpl implements TokensService {
     private final TokensRepository tokensRepository;
-    private final String pathToMaleFlatFile;
-    private final String pathToFemaleFlatFile;
 
     @Autowired
     public TokensServiceImpl(TokensRepository tokensRepository) {
         this.tokensRepository = tokensRepository;
-        this.pathToFemaleFlatFile = TokensServiceImpl.class.getResource("/flatDB/Female.txt").getPath();
-        this.pathToMaleFlatFile = TokensServiceImpl.class.getResource("/flatDB/Male.txt").getPath();
     }
 
     /**
@@ -71,11 +68,11 @@ public class TokensServiceImpl implements TokensService {
     }
 
     private List<String> getMaleTokensFromRange(long firstToken, long lastToken) {
-        return new ArrayList<>(tokensRepository.getTokens(pathToMaleFlatFile, firstToken, lastToken));
+        return new ArrayList<>(tokensRepository.getTokens(Gender.MALE, firstToken, lastToken));
     }
 
     private List<String> getFemaleTokensFromRange(long firstToken, long lastToken) {
-        return new ArrayList<>(tokensRepository.getTokens(pathToFemaleFlatFile, firstToken, lastToken));
+        return new ArrayList<>(tokensRepository.getTokens(Gender.FEMALE, firstToken, lastToken));
     }
 
 }

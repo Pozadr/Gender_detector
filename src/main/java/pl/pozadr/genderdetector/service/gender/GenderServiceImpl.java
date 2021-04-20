@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import pl.pozadr.genderdetector.repository.gender.GenderRepository;
+import pl.pozadr.genderdetector.repository.GenderRepository;
 import pl.pozadr.genderdetector.util.CheckGenderMethods;
+import pl.pozadr.genderdetector.util.Gender;
 
 
 /**
@@ -15,14 +16,10 @@ import pl.pozadr.genderdetector.util.CheckGenderMethods;
 public class GenderServiceImpl implements GenderService {
     Logger logger = LoggerFactory.getLogger(GenderServiceImpl.class);
     private final GenderRepository genderRepository;
-    private final String pathToMaleFlatFile;
-    private final String pathToFemaleFlatFile;
 
     @Autowired
     public GenderServiceImpl(GenderRepository genderRepository) {
         this.genderRepository = genderRepository;
-        this.pathToFemaleFlatFile = GenderServiceImpl.class.getResource("/flatDB/Female.txt").getPath();
-        this.pathToMaleFlatFile = GenderServiceImpl.class.getResource("/flatDB/Male.txt").getPath();
     }
 
     @Override
@@ -112,12 +109,12 @@ public class GenderServiceImpl implements GenderService {
         return genderMarker;
     }
 
-    private boolean isMale(String oneToken) {
-        return genderRepository.isContaining(pathToMaleFlatFile, oneToken);
+    private boolean isMale(String token) {
+        return genderRepository.isContaining(token, Gender.MALE);
     }
 
-    private boolean isFemale(String oneToken) {
-        return genderRepository.isContaining(pathToFemaleFlatFile, oneToken);
+    private boolean isFemale(String token) {
+        return genderRepository.isContaining(token, Gender.FEMALE);
     }
 
     private boolean isMethodFirstToken(String method) {
