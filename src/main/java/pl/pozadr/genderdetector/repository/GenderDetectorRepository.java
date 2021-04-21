@@ -82,12 +82,12 @@ public class GenderDetectorRepository implements GenderRepository, TokensReposit
     @EventListener(ApplicationReadyEvent.class)
     public void algorithmVersionInfo() {
         switch (algorithmVersion.toUpperCase()) {
-            case "BUFFERED_READER": {
-                logger.info("Algorithm version: " + algorithmVersion);
+            case "STREAM_API": {
+                logger.info("Algorithm version: Stream API");
                 break;
             }
             default: {
-                logger.info("Algorithm version: default -> Stream API");
+                logger.info("Algorithm version: default -> Buffered Reader");
                 break;
             }
         }
@@ -104,13 +104,13 @@ public class GenderDetectorRepository implements GenderRepository, TokensReposit
         Resource resource = getResource(gender);
         try {
             switch (algorithmVersion.toUpperCase()) {
-                case "BUFFERED_READER": {
-                    logger.debug("Algorithm version: " + algorithmVersion);
-                    return isContainingBufferedReader(resource, input);
+                case "STREAM_API": {
+                    logger.debug("Algorithm version: Stream API");
+                    return isContainingStreamApi(resource, input);
                 }
                 default: {
-                    logger.debug("Algorithm version: default -> Stream API");
-                    return isContainingStreamApi(resource, input);
+                    logger.debug("Algorithm version: default -> Buffered Reader");
+                    return isContainingBufferedReader(resource, input);
                 }
             }
         } catch (IOException exp) {
@@ -135,7 +135,6 @@ public class GenderDetectorRepository implements GenderRepository, TokensReposit
      */
     private boolean isContainingBufferedReader(Resource resource, String input) throws IOException {
         InputStream inputStream = resource.getInputStream();
-
         try (BufferedReader fileBufferReader = new BufferedReader(new InputStreamReader(inputStream))) {
             String fileLineContent;
             while ((fileLineContent = fileBufferReader.readLine()) != null) {
@@ -162,7 +161,6 @@ public class GenderDetectorRepository implements GenderRepository, TokensReposit
      * @return - true/false
      */
     private boolean isContainingStreamApi(Resource resource, String input) {
-        // "./src/main/resources/flatDB/Male.txt"
         try (Stream<String> inputStream = Files.lines(Paths.get(resource.getURI()), StandardCharsets.UTF_8)) {
             return inputStream.anyMatch(line -> line.equalsIgnoreCase(input));
         } catch (IOException exp) {
