@@ -1,15 +1,15 @@
-package pl.pozadr.genderdetector.dto;
+package pl.pozadr.genderdetector.dto.response;
 
 /**
  * Data Transfer Object.
  * Contains data about API request and response.
  */
-public class GenderDto {
-    private String requestName;
-    private String requestMethod;
-    private String gender;
+public class GenderResponseDto {
+    private final String requestName;
+    private final String requestMethod;
+    private final String gender;
 
-    public GenderDto(String requestName, String requestMethod, String gender) {
+    public GenderResponseDto(String requestName, String requestMethod, String gender) {
         this.requestName = requestName;
         this.requestMethod = requestMethod;
         this.gender = gender;

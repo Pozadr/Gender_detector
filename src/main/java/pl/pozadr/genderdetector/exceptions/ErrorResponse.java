@@ -7,14 +7,12 @@ import java.time.LocalDateTime;
 
 public class ErrorResponse {
     private final String message;
-    private final HttpStatus httpStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private final LocalDateTime localDateTime;
 
-    public ErrorResponse(LocalDateTime localDateTime, HttpStatus httpStatus, String message) {
+    public ErrorResponse(LocalDateTime localDateTime, String message) {
         this.localDateTime = localDateTime;
-        this.httpStatus = httpStatus;
         this.message = message;
     }
 
@@ -24,10 +22,6 @@ public class ErrorResponse {
 
     public LocalDateTime getLocalDateTime() {
         return localDateTime;
-
     }
 
-    public HttpStatus getHttpStatus() {
-        return httpStatus;
-    }
 }

@@ -4,8 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.pozadr.genderdetector.dto.request.GenderRequestDto;
 import pl.pozadr.genderdetector.repository.GenderRepository;
-import pl.pozadr.genderdetector.util.CheckGenderMethods;
+import pl.pozadr.genderdetector.util.GenderMethods;
 import pl.pozadr.genderdetector.util.Gender;
 
 
@@ -23,7 +24,9 @@ public class GenderServiceImpl implements GenderService {
     }
 
     @Override
-    public String checkGender(String inputName, String method) {
+    public String checkGender(GenderRequestDto genderRequestDto) {
+        String method = genderRequestDto.getMethod();
+        String inputName = genderRequestDto.getName();
         if (isMethodFirstToken(method)) {
             return checkFirstTokenInName(inputName);
         }
@@ -118,7 +121,7 @@ public class GenderServiceImpl implements GenderService {
     }
 
     private boolean isMethodFirstToken(String method) {
-        return method.trim().equalsIgnoreCase(CheckGenderMethods.FIRST_TOKEN.toString());
+        return method.trim().equalsIgnoreCase(GenderMethods.FIRST_TOKEN.toString());
     }
 
 }

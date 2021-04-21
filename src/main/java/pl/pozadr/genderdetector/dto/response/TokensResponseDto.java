@@ -1,4 +1,4 @@
-package pl.pozadr.genderdetector.dto;
+package pl.pozadr.genderdetector.dto.response;
 
 import java.util.List;
 
@@ -6,22 +6,22 @@ import java.util.List;
  * Data Transfer Object.
  * Contains data about API request and response.
  */
-public class TokensDto {
-    Integer requestPageNumber;
-    Integer requestPageSize;
+public class TokensResponseDto {
+    int requestPageNumber;
+    int requestPageSize;
     List<String> tokens;
 
-    public TokensDto(Integer requestPageNumber, Integer requestPageSize, List<String> tokens) {
+    public TokensResponseDto(Integer requestPageNumber, Integer requestPageSize, List<String> tokens) {
         this.requestPageNumber = requestPageNumber;
         this.requestPageSize = requestPageSize;
         this.tokens = tokens;
     }
 
-    public Integer getRequestPageNumber() {
+    public int getRequestPageNumber() {
         return requestPageNumber;
     }
 
-    public Integer getRequestPageSize() {
+    public int getRequestPageSize() {
         return requestPageSize;
     }
 
