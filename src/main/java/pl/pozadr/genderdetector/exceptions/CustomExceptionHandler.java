@@ -35,7 +35,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(value = {MethodParameterNotValidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    ErrorResponse handleCarNotFoundException(final MethodParameterNotValidException ex) {
+    ErrorResponse handleMethodParameterNotValidException(final MethodParameterNotValidException ex) {
         return new ErrorResponse(LocalDateTime.now(), ex.getMessage());
     }
 

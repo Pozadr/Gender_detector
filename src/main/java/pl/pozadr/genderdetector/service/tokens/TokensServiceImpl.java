@@ -2,6 +2,7 @@ package pl.pozadr.genderdetector.service.tokens;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.pozadr.genderdetector.dto.request.TokensRequestDto;
 import pl.pozadr.genderdetector.repository.TokensRepository;
 import pl.pozadr.genderdetector.util.Gender;
 
@@ -17,33 +18,14 @@ public class TokensServiceImpl implements TokensService {
         this.tokensRepository = tokensRepository;
     }
 
-    /**
-     * Returns list of male and female tokens.
-     * Uses pagination to get tokens from flatFile.
-     *
-     * @param pageNo   - pagination page number
-     * @param pageSize - pagination page size
-     * @return - list of tokens
-     */
+
     @Override
-    public List<String> getTokens(Integer pageNo, Integer pageSize) {
-        if (pageNo == null) {
-            throw new IllegalArgumentException("Given pageNo is null");
-        }
-        if (pageSize == null) {
-            throw new IllegalArgumentException("Given pageSize is null");
-        }
+    public List<String> getTokens(TokensRequestDto tokensRequestDto) {
+        Integer pageNo = tokensRequestDto.getPageNo();
+        Integer pageSize = tokensRequestDto.getPageSize();
         return getHalfMaleAndHalfFemaleTokens(pageNo, pageSize);
     }
 
-    /**
-     * Uses pagination to get tokens from flatFile.
-     * Returns list of tokens in which half are the male tokens and half are the female tokens.
-     *
-     * @param pageNo   - pagination page number
-     * @param pageSize - pagination page size
-     * @return - list of tokens
-     */
     private List<String> getHalfMaleAndHalfFemaleTokens(Integer pageNo, Integer pageSize) {
         long start = getPaginationStart(pageNo, pageSize);
         long end = getPaginationEnd(start, pageSize);

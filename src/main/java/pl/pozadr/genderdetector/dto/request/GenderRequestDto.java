@@ -7,10 +7,10 @@ import javax.validation.constraints.NotEmpty;
 
 public class GenderRequestDto {
     @NotEmpty(message = "Given name can not be empty.")
-    String name;
+    private String name;
 
     @NotEmpty(message = "Given method can not be empty.")
-    String method;
+    private String method;
 
     public String getName() {
         return name;
